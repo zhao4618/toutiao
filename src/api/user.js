@@ -1,4 +1,4 @@
-// 用户相关请求模块
+// 用户相关请求登录模块
 import request from "@/utils/requset";
 export const login = (data) => {
     return request({

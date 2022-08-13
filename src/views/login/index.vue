@@ -31,7 +31,8 @@
 </template>
 
 <script>
-import { login,sendSms } from "@/api/user";
+// 引入登录和发送验证码封装好的请求
+import { login, sendSms } from "@/api/user";
 
 export default {
   data() {
@@ -73,9 +74,9 @@ export default {
       });
       //3提交表单请求登录
       try {
-        const res = await login(user);
-        console.log(res);
-        this.$toast.success('登录成功')
+        const { data } = await login(this.user);
+        this.$store.commit('setUser', data.data) //vuex提交更改数据
+        this.$toast.success('登录成功')  //vant内置弹窗
       } catch (err) {
         if (err.request.status === 400) {
           console.log("手机号或验证码错误");
@@ -97,18 +98,18 @@ export default {
         console.log('手机号验证失败');
         return
       }
-      // 2.验证通过显示倒计时
+      // 2.验证通过后显示倒计时
       this.idCountDownShow = true
       // 3.请求发送验证码
       try {
         await sendSms(this.user.mobile)
         this.$toast('发送成功！')
       } catch (err) {
-         this.idCountDownShow = false
+        this.idCountDownShow = false
         if (err.request.status === 429) {
-        this.$toast('发送频繁 请稍后再试！')       
+          this.$toast('发送频繁 请稍后再试！')
         } else {
-        this.$toast('发送失败！')       
+          this.$toast('发送失败！')
         }
       }
     }
